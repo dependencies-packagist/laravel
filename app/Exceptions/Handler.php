@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use App\Http\Responses\ErrorResponse;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,10 +27,11 @@ class Handler extends ExceptionHandler
     public function register(): void
     {
         $this->reportable(function (Throwable $e) {
-            //
+            // dump(['reportable', $e, (new \ReflectionClass($e))->isInternal()]);
         });
         $this->renderable(function (Throwable $e, Request $request) {
-            //
+            // dump(['renderable', $e, (new \ReflectionClass($e))->isInternal()]);
+            return (new ErrorResponse(error: $e->getMessage(), code: $e->getCode()))->toResponse($request);
         });
     }
 
@@ -44,6 +46,7 @@ class Handler extends ExceptionHandler
      */
     public function report(Throwable $e): void
     {
+        // dump([__FUNCTION__, $e]);
         parent::report($e);
     }
 
@@ -59,6 +62,7 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $e): Response
     {
+        // dump([__FUNCTION__, $e]);
         return parent::render($request, $e);
     }
 }
